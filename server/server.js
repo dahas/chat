@@ -25,7 +25,7 @@ var clientsCount = 0;
 
 var clients = [];
 
-var nsp = io.of("/default");
+var nsp = io.of("/chat");
 
 nsp.on('connection', function (socket) {
     //var CM = new ClientManager(socket);

@@ -112,7 +112,7 @@ angular.module('Chat').controller('chatClient', function($scope, Socket) {
 
 angular.module('Services', []).
     factory('Socket', function($rootScope) {
-        var socket = io("/default").connect();
+        var socket = io("/chat").connect();
         return {
             on: function(eventName, callback) {
                 socket.on(eventName, function() {
