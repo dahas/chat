@@ -6,8 +6,8 @@ ClientManager = function () {
 
 /**
  * Create a unique and readable client ID
- * @param   String  New name of the client. If name is already in use, it´ll be extended by an increasing number
- * @return  String  Unique client ID
+ * @param   String  Name of the client. If it´s already in use, it´ll be extended by an increasing number.
+ * @return  String  New Unique client ID
  */
 ClientManager.prototype.createUniqueClientID = function (name) {
     return this.unifyArray(this.getClients(null), name);
