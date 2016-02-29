@@ -3,12 +3,13 @@
  * CHAT
  *
  * Requires:
- * npm install connect@2.x.x
+ * npm install express@4.x.x
  * npm install forever -g
  * npm install socket.io
  */
-var connect = require('connect');
-var CM = require('./ClientManager.js');
+var connect = require('express');
+
+var crm = require('crm');
 
 var server = connect().
     use(connect.static(__dirname + '/../client')).
@@ -18,6 +19,7 @@ var socketIO = require('socket.io');
 
 var io = socketIO.listen(server);
 
+var uClientID = "";
 var defaultRoom = "default";
 
 var nsp = io.of("/chat");   // Namespace
@@ -27,40 +29,40 @@ nsp.on('connection', function (socket) {
     socket.join(defaultRoom);
 
     // Create a readable unique ID
-    socket.client.id = CM.createUniqueClientID("Gast");
+    uClientID = crm.createUniqueClientID("Gast");
 
     // Assign the client to the manager
-    CM.addClient(socket.client.id, defaultRoom);
+    crm.addClient(uClientID, defaultRoom);
 
     // Provide data to the frontend when client connects
     socket.emit('launch', {
-        clientID: socket.client.id
+        clientID: uClientID
     });
 
     // Send amount of connections to the namespace
     nsp.emit('refreshClientsCount', {
-        count: CM.amountOfConnectedClients(null)
+        count: crm.amountOfConnectedClients(null)
     });
 
     nsp.to(defaultRoom).emit('refreshClientNames', {
-        clients: CM.getClients(defaultRoom)
+        clients: crm.getClients(defaultRoom)
     });
 
     // Send event to the namespace excluding sender
     socket.on('disconnect', function () {
-        CM.removeClient(socket.client.id);
+        crm.removeClient(uClientID);
 
         socket.broadcast.emit('refreshClientsCount', {
-            count: CM.amountOfConnectedClients(null)
+            count: crm.amountOfConnectedClients(null)
         });
 
-        var roomID = CM.getClientRoom(socket.client.id);
+        var roomID = crm.getClientRoom(uClientID);
         socket.broadcast.to(roomID).emit('refreshClientNames', {
-            clients: CM.getClients(roomID)
+            clients: crm.getClients(roomID)
         });
 
         socket.broadcast.emit('receive', {
-            message: socket.client.id + " hat den Chat beendet"
+            message: uClientID + " hat den Chat beendet"
         });
     });
 
@@ -71,12 +73,12 @@ nsp.on('connection', function (socket) {
 
     // User changes his name
     socket.on('changeName', function (data) {
-        socket.client.id = CM.changeClientID(socket.client.id, data.name);
+        uClientID = crm.changeClientID(uClientID, data.name);
         socket.emit('refreshOwnName', {
-            name: socket.client.id
+            name: uClientID
         });
         nsp.to(data.roomID).emit('refreshClientNames', {
-            clients: CM.getClients(data.roomID)
+            clients: crm.getClients(data.roomID)
         });
     });
 
@@ -84,9 +86,9 @@ nsp.on('connection', function (socket) {
     socket.on('leaveRoom', function (data) {
         socket.broadcast.to(data.roomID).emit('receive', data);
         socket.leave(data.roomID);
-        CM.removeClient(socket.client.id);
+        crm.removeClient(uClientID);
         nsp.to(data.roomID).emit('refreshClientNames', {
-            clients: CM.getClients(data.roomID)
+            clients: crm.getClients(data.roomID)
         });
     });
 
@@ -94,9 +96,9 @@ nsp.on('connection', function (socket) {
     socket.on('joinRoom', function (data) {
         socket.broadcast.to(data.roomID).emit('receive', data);
         socket.join(data.roomID);
-        CM.addClient(socket.client.id, data.roomID);
+        crm.addClient(uClientID, data.roomID);
         nsp.to(data.roomID).emit('refreshClientNames', {
-            clients: CM.getClients(data.roomID)
+            clients: crm.getClients(data.roomID)
         });
     });
 
