@@ -1,0 +1,26 @@
+<div ng-show="loading">
+    <i>loading...</i>
+</div>
+
+<div ng-show="!loading">
+    <p>Connected clients: {{connections}}</p>
+    <input type="hidden" ng-model="connections" value="{{connections}}">
+    <p>
+        Dein Name: <input type="text" ng-model="user" value="{{clientID}}"> <button ng-click="changeName()" style="width: 100px;">Ändern</button>
+    </p>
+    <p>
+        Raum: <select ng-model="room" ng-options="room as room.label for room in rooms" ng-change="changeRoom();"></select>
+    </p>
+    <div style="display:table-cell; background: black; color: silver; width: 500px; height: 200px; max-height: 200px; overflow:scroll; overflow-x: hidden; padding:10px; font-family: 'Courier New'; font-size: 12px;">
+        <ul style="list-style-type: none; margin: 0; padding: 0;">
+            <li ng-repeat="message in messages" style="color: {{message.msgColor}};">{{message.message}}</li>
+        </ul>
+    </div>
+    <div style="display:table-cell; border-left:1px solid white; background: #333; color: silver; width: 140px; padding: 10px;">
+        <ul style="list-style-type: none; margin: 0; padding: 0;">
+            <li ng-repeat="client in clients">{{client}}</li>
+        </ul>
+    </div>
+    <input type="text" ng-model="msg" style="width: 500px;">
+    <button ng-click="sendMessage()" style="width: 100px;">Senden</button>
+</div>
