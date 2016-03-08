@@ -1,11 +1,14 @@
 /**
- *
  * CHAT
  *
  * Requires:
  * npm install express@4.x.x
  * npm install forever -g
  * npm install socket.io
+ *
+ * Terminal:
+ * 1. cd server
+ * 2. forever --watch server.js
  */
 var connect = require('express');
 
