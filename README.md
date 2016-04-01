@@ -1,5 +1,5 @@
 # chat
 A basic chat application for NodeJS.
 
-## Publisher
+## Author
 Martin Wolf
